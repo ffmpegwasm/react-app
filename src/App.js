@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createFFmpeg } from '@ffmpeg/ffmpeg';
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import './App.css';
 
 function App() {
@@ -12,10 +12,10 @@ function App() {
     setMessage('Loading ffmpeg-core.js');
     await ffmpeg.load();
     setMessage('Start transcoding');
-    await ffmpeg.write('test.avi', '/flame.avi');
-    await ffmpeg.transcode('test.avi', 'test.mp4');
+    ffmpeg.FS('writeFile', 'test.avi', await fetchFile('/flame.avi'));
+    await ffmpeg.run('-i', 'test.avi', 'test.mp4');
     setMessage('Complete transcoding');
-    const data = ffmpeg.read('test.mp4');
+    const data = ffmpeg.FS('readFile', 'test.mp4');
     setVideoSrc(URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' })));
   };
   return (
